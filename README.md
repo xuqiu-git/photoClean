@@ -1,4 +1,4 @@
-# photoClear
+# photoClean
 You can delete non-matching RAW files based on JPG files.
 
 Run with code
