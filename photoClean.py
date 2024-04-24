@@ -81,9 +81,9 @@ def choose_format():
     }
 
     root = tk.Tk()
-    root.title("选择RAW文件格式")
+    root.title("选择待清理的RAW格式")
 
-    root.geometry("250x250")  # 调整窗口大小
+    root.geometry("300x250")  # 调整窗口大小
 
     # 配置列和行的权重以居中
     num_columns = 2  # 每行两个按钮
