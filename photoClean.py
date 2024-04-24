@@ -80,18 +80,29 @@ def select_folder_and_cleanup(raw_extension):
 def choose_format():
     # 定义可用的RAW格式
     raw_formats = {
-        "索尼 ARW": "ARW",
-        "佳能 CR2": "CR2",
-        "富士 RAF": "RAF",
-        "尼康 NEF": "NEF",
-        "松下 RW2": "RW2",
-        "徕卡、理光、大疆 DNG": "DNG",
-        "适马 X3F": "X3F",
-        "奥林巴斯 ORF": "ORF",
+        "JPEG & ARW": "ARW",
+        "JPEG & CR2": "CR2",
+        "JPEG & RAF": "RAF",
+        "JPEG & NEF": "NEF",
+        "JPEG & RW2": "RW2",
+        "JPEG & DNG": "DNG",
+        "JPEG & X3F": "X3F",
+        "JPEG & ORF": "ORF",
     }
 
     root = tk.Tk()
-    root.title("选择RAW文件格式")
+    root.title("选择RAW格式")
+
+    # 调整窗口宽度，使标题可以完全显示
+    root.geometry("250x250")  # 250px宽度和250px高度，适当调整尺寸
+
+    # 配置列和行的权重以居中
+    num_columns = 2  # 每行两个按钮
+    num_rows = (len(raw_formats) // num_columns) + (len(raw_formats) % num_columns)  # 确定总行数
+    for i in range(num_columns):
+        root.grid_columnconfigure(i, weight=1)  # 为每列设置权重
+    for i in range(num_rows):
+        root.grid_rowconfigure(i, weight=1)  # 为每行设置权重
 
     # 根据可用的RAW格式动态创建按钮
     row = 0
@@ -102,14 +113,13 @@ def choose_format():
             text=format_name,
             command=lambda ext=extension: select_folder_and_cleanup(ext)
         )
-        # 使用grid布局
-        button.grid(row=row, column=col, padx=10, pady=10)  # 适当增加间距
+        button.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")  # 让按钮填满网格
         col += 1
-        if col == 2:  # 每行两列
+        if col == num_columns:  # 每行两个按钮
             col = 0
             row += 1  # 换行
 
-    root.mainloop()  # 开始GUI事件循环
+    root.mainloop()
 
 
 if __name__ == "__main__":
