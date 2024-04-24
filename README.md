@@ -1,4 +1,4 @@
-# clearSony
+# photoClear
 You can delete non-matching RAW files based on JPG files.
 
 Run with code
