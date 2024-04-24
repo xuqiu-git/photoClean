@@ -13,35 +13,44 @@ def cleanup_folder(folder_path, raw_extension):
     initial_jpg_count = len(jpg_files)
     initial_raw_count = len(raw_files)
 
-    # 创建两个空列表，分别存储所有.jpg和.raw文件的名称（不包括扩展名）
+    # 创建两个空列表，分别存储所有.jpg和.raw文件的名称
     jpg_names = [os.path.splitext(os.path.basename(f))[0] for f in jpg_files]
     raw_names = [os.path.splitext(os.path.basename(f))[0] for f in raw_files]
 
     # 删除没有对应.jpg文件的.raw文件
+    deleted_raw_count = 0
     for raw_file, raw_name in zip(raw_files, raw_names):
         if raw_name not in jpg_names:
             os.remove(raw_file)
-            print(f'已删除 {raw_file}，因为它没有对应的 .jpg 文件。')
+            deleted_raw_count += 1
 
     # 删除没有对应.raw文件的.jpg文件
+    deleted_jpg_count = 0
     for jpg_file, jpg_name in zip(jpg_files, jpg_names):
         if jpg_name not in raw_names:
             os.remove(jpg_file)
-            print(f'已删除 {jpg_file}，因为它没有对应的 .{raw_extension} 文件。')
+            deleted_jpg_count += 1
 
-    # 重新计算并打印处理后的.jpg和.raw文件的数量
-    final_jpg_files = glob.glob(os.path.join(folder_path, '*.jpg'))
-    final_raw_files = glob.glob(os.path.join(folder_path, f'*.{raw_extension}'))
-    print(f'初始 .jpg 文件数量: {initial_jpg_count}')
-    print(f'初始 .{raw_extension} 文件数量: {initial_raw_count}')
-    print(f'最终 .jpg 文件数量: {len(final_jpg_files)}')
-    print(f'最终 .{raw_extension} 文件数量: {len(final_raw_files)}')
-    print('清理完成。文件现在一致。')
+    # 计算最终的.jpg和.raw文件数量
+    final_jpg_count = len(glob.glob(os.path.join(folder_path, '*.jpg')))
+    final_raw_count = len(glob.glob(os.path.join(folder_path, f'*.{raw_extension}')))
+
+    # 汇总信息并显示在一个消息框中
+    message = (
+        f"初始 .jpg 文件数量: {initial_jpg_count}\n"
+        f"初始 .{raw_extension} 文件数量: {initial_raw_count}\n"
+        f"最终 .jpg 文件数量: {final_jpg_count}\n"
+        f"最终 .{raw_extension} 文件数量: {final_raw_count}\n"
+        f"清理完成。文件现在一致。"
+    )
+
+    # 使用 messagebox 显示消息
+    messagebox.showinfo("文件夹清理报告", message)
 
 
 def select_folder_and_cleanup(raw_extension):
     root = tk.Tk()
-    root.withdraw()  # 隐藏主窗口
+    root.withdraw()
 
     # 让用户选择文件夹
     folder_path = filedialog.askdirectory()
@@ -49,36 +58,17 @@ def select_folder_and_cleanup(raw_extension):
         messagebox.showinfo("取消", "操作已取消")
         return
 
-    # 创建确认对话框
-    confirm_window = tk.Tk()
-    confirm_window.title("确认操作")
-
-    # 创建提示信息
-    label = tk.Label(confirm_window, text=f"确认清理 {folder_path} 文件夹吗？")
-    label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
-
-    # 创建“确定”和“取消”按钮
-    def on_confirm():
+    # 确认是否要继续清理
+    confirm = messagebox.askyesno(
+        "确认操作", f"确认要清理 {folder_path} 文件夹吗？"
+    )
+    if confirm:
         cleanup_folder(folder_path, raw_extension)
-        messagebox.showinfo("完成", "文件夹清理完成！")
-        confirm_window.destroy()  # 关闭确认窗口
-
-    def on_cancel():
+    else:
         messagebox.showinfo("取消", "操作已取消")
-        confirm_window.destroy()  # 关闭确认窗口
-
-    # 设置按钮
-    button_confirm = tk.Button(confirm_window, text="确定", command=on_confirm)
-    button_cancel = tk.Button(confirm_window, text="取消", command=on_cancel)
-
-    button_confirm.grid(row=1, column=0, padx=10, pady=10)
-    button_cancel.grid(row=1, column=1, padx=10, pady=10)
-
-    confirm_window.mainloop()  # 开始事件循环
 
 
 def choose_format():
-    # 定义可用的RAW格式
     raw_formats = {
         "JPEG & ARW": "ARW",
         "JPEG & CR2": "CR2",
@@ -91,10 +81,9 @@ def choose_format():
     }
 
     root = tk.Tk()
-    root.title("选择RAW格式")
+    root.title("选择RAW文件格式")
 
-    # 调整窗口宽度，使标题可以完全显示
-    root.geometry("250x250")  # 250px宽度和250px高度，适当调整尺寸
+    root.geometry("250x250")  # 调整窗口大小
 
     # 配置列和行的权重以居中
     num_columns = 2  # 每行两个按钮
@@ -123,4 +112,4 @@ def choose_format():
 
 
 if __name__ == "__main__":
-    choose_format()  # 让用户选择RAW文件格式
+    choose_format()
