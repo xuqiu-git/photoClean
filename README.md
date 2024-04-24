@@ -1,6 +1,6 @@
 # clearSony
-You can delete non-matching RAW files based on JPG files, and also delete non-matching .jpg files based on .arw files.
+You can delete non-matching RAW files based on JPG files.
 
 Run with code
 
-pyinstaller --onefile --icon=A7C2.ico cleanup.py
+pyinstaller --onefile --windowed --icon=camera.ico .\photoClean.py
