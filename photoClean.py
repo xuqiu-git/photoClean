@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 import os
 import glob
 
@@ -97,7 +97,7 @@ def choose_format():
     row = 0
     col = 0
     for format_name, extension in raw_formats.items():
-        button = tk.Button(
+        button = ttk.Button(
             root,
             text=format_name,
             command=lambda ext=extension: select_folder_and_cleanup(ext)
