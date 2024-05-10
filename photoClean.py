@@ -102,6 +102,8 @@ def choose_format():
             text=format_name,
             command=lambda ext=extension: select_folder_and_cleanup(ext)
         )
+        style = ttk.Style(root)
+        style.map('TButton', foreground=[('pressed', 'blue'), ('active', 'black')])
         button.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")  # 让按钮填满网格
         col += 1
         if col == num_columns:  # 每行两个按钮
