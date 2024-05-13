@@ -3,6 +3,10 @@ from tkinter import filedialog, messagebox, ttk
 import os
 import glob
 
+# 创建全局主窗口实例
+root = tk.Tk()
+root.withdraw()  # 初始隐藏主窗口
+
 
 def cleanup_folder(folder_path, raw_extension):
     # 获取文件夹中所有的.jpg和指定的.raw文件
@@ -43,29 +47,20 @@ def cleanup_folder(folder_path, raw_extension):
         f"最终 .{raw_extension} 文件数量: {final_raw_count}\n"
         f"清理完成。文件现在一致。"
     )
-
     # 使用 messagebox 显示消息
     messagebox.showinfo("文件夹清理报告", message)
 
 
 def select_folder_and_cleanup(raw_extension):
-    root = tk.Tk()
-    root.withdraw()
-
-    # 让用户选择文件夹
-    folder_path = filedialog.askdirectory()
+    folder_path = filedialog.askdirectory(parent=root)
     if not folder_path:
-        messagebox.showinfo("取消", "操作已取消")
+        messagebox.showinfo("取消", "操作已取消", parent=root)
         return
-
-    # 确认是否要继续清理
-    confirm = messagebox.askyesno(
-        "确认操作", f"确认要清理 {folder_path} 文件夹吗？"
-    )
+    confirm = messagebox.askyesno("确认操作", f"确认要清理 {folder_path} 文件夹吗？", parent=root)
     if confirm:
         cleanup_folder(folder_path, raw_extension)
     else:
-        messagebox.showinfo("取消", "操作已取消")
+        messagebox.showinfo("取消", "操作已取消", parent=root)
 
 
 def choose_format():
@@ -80,38 +75,42 @@ def choose_format():
         "JPEG & ORF": "ORF",
     }
 
-    root = tk.Tk()
-    root.title("选择待清理的RAW格式")
-
-    root.geometry("300x250")  # 调整窗口大小
-
-    # 配置列和行的权重以居中
-    num_columns = 2  # 每行两个按钮
-    num_rows = (len(raw_formats) // num_columns) + (len(raw_formats) % num_columns)  # 确定总行数
+    choose_window = tk.Toplevel(root)
+    choose_window.title("选择待清理的RAW格式")
+    choose_window.geometry("300x250")
+    num_columns = 2
+    num_rows = (len(raw_formats) // num_columns) + (len(raw_formats) % num_columns)
     for i in range(num_columns):
-        root.grid_columnconfigure(i, weight=1)  # 为每列设置权重
+        choose_window.grid_columnconfigure(i, weight=1)
     for i in range(num_rows):
-        root.grid_rowconfigure(i, weight=1)  # 为每行设置权重
+        choose_window.grid_rowconfigure(i, weight=1)
 
-    # 根据可用的RAW格式动态创建按钮
     row = 0
     col = 0
     for format_name, extension in raw_formats.items():
         button = ttk.Button(
-            root,
+            choose_window,
             text=format_name,
             command=lambda ext=extension: select_folder_and_cleanup(ext)
         )
-        style = ttk.Style(root)
-        style.map('TButton', foreground=[('pressed', 'blue'), ('active', 'black')])
-        button.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")  # 让按钮填满网格
+        button.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")
         col += 1
-        if col == num_columns:  # 每行两个按钮
+        if col == num_columns:
             col = 0
-            row += 1  # 换行
+            row += 1
 
-    root.mainloop()
+    choose_window.protocol("WM_DELETE_WINDOW", lambda: on_close(choose_window))
+
+
+def on_close(window):
+    """关闭窗口并检查是否需要退出主程序"""
+    window.destroy()
+    if not any(win.winfo_exists() for win in root.winfo_children() if isinstance(win, tk.Toplevel)):
+        root.destroy()
+        root.quit()
 
 
 if __name__ == "__main__":
+    root.protocol("WM_DELETE_WINDOW", lambda: on_close(root))
     choose_format()
+    root.mainloop()
