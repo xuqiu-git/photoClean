@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 import requests
 
-
 def check_for_updates():
     """检查 GitHub 上的新版本并获取.exe文件的下载链接"""
     repo_owner = "xuqiu-git"
@@ -22,10 +21,12 @@ def check_for_updates():
     else:
         return None, None
 
-def download_update(download_url):
+def download_update(download_url, version):
     """让用户选择下载路径并下载新版本的文件"""
+    default_filename = f"photoClean_v{version}.exe"
     save_path = filedialog.asksaveasfilename(
         title="保存新版本为",
+        initialfile=default_filename,
         filetypes=[("Executable files", "*.exe")],
         defaultextension=".exe"
     )
@@ -40,7 +41,6 @@ def download_update(download_url):
     else:
         messagebox.showinfo("取消下载", "更新下载已取消。")
 
-
 def update_software(local_version):
     latest_version, download_url = check_for_updates()
     if latest_version is None:
@@ -52,6 +52,6 @@ def update_software(local_version):
     elif download_url:
         response = messagebox.askyesno("发现新版本", f"最新版本 {latest_version} 可用。是否下载？")
         if response:
-            download_update(download_url)
+            download_update(download_url, latest_version)
     else:
         messagebox.showinfo("无可用更新", f"最新版本是 {latest_version}，但没有可下载的 .exe 文件。")
