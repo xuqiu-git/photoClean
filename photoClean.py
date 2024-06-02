@@ -2,10 +2,10 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 import os
 import glob
-# 导入更新功能
 from update import update_software
 
-
+# 定义本地版本号
+LOCAL_VERSION = "v1.2.1"
 # 创建全局主窗口实例
 root = tk.Tk()
 root.withdraw()  # 初始隐藏主窗口
@@ -102,8 +102,7 @@ def choose_format():
             col = 0
             row += 1
 
-    # 添加检查更新按钮
-    update_btn = ttk.Button(choose_window, text="检查更新", command=update_software)
+    update_btn = ttk.Button(choose_window, text="检查更新", command=lambda: update_software(LOCAL_VERSION))
     update_btn.grid(row=num_rows, column=0, columnspan=num_columns, sticky='ew', padx=10, pady=10)
 
     choose_window.protocol("WM_DELETE_WINDOW", lambda: on_close(choose_window))
