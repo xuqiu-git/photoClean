@@ -5,7 +5,7 @@ import glob
 from update import update_software
 
 # 定义本地版本号
-LOCAL_VERSION = "v1.2.1"
+LOCAL_VERSION = "1.2.2"
 # 创建全局主窗口实例
 root = tk.Tk()
 root.withdraw()  # 初始隐藏主窗口
