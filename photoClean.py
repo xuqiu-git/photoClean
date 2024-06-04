@@ -2,10 +2,13 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 import os
 import glob
+import webbrowser
 from update import update_software
+from PIL import Image, ImageTk
 
 # 定义本地版本号
-LOCAL_VERSION = "1.2.2"
+LOCAL_VERSION = "1.2.3"
+
 # 创建全局主窗口实例
 root = tk.Tk()
 root.withdraw()  # 初始隐藏主窗口
@@ -66,6 +69,11 @@ def select_folder_and_cleanup(raw_extension):
         messagebox.showinfo("取消", "操作已取消", parent=root)
 
 
+def open_help():
+    """打开帮助文档的回调函数"""
+    webbrowser.open("https://github.com/xuqiu-git/photoClean/blob/main/help.txt")  # 使用实际的帮助文档链接
+
+
 def choose_format():
     raw_formats = {
         "JPEG & ARW": "ARW",
@@ -79,20 +87,48 @@ def choose_format():
     }
 
     choose_window = tk.Toplevel(root)
-    choose_window.title("选择待清理的RAW格式")
-    choose_window.geometry("300x250")
+    choose_window.title("photoCleaner v1.2.3")  # 设置窗口标题
+    choose_window.geometry("300x300")
+
+    # 创建一个框架用于自定义标题栏
+    title_frame = ttk.Frame(choose_window)
+    title_frame.grid(row=0, column=0, columnspan=2, pady=10, sticky="ew")
+
+    # 创建一个内框架用于居中对齐标题和问号按钮
+    inner_frame = ttk.Frame(title_frame)
+    inner_frame.grid(row=0, column=1)
+
+    # 创建自定义样式
+    style = ttk.Style()
+    style.configure("Title.TLabel", font=("Times New Roman", 10))
+
+    title_label = ttk.Label(inner_frame, text="选择待清理的RAW格式", style="Title.TLabel")
+    title_label.grid(row=0, column=0, padx=(0, 5))
+
+    # 加载问号图标并调整大小
+    original_icon = Image.open("question_icon.png")
+    resized_icon = original_icon.resize((15, 15), Image.LANCZOS)
+    help_icon = ImageTk.PhotoImage(resized_icon)
+
+    help_btn = ttk.Button(inner_frame, image=help_icon, command=open_help)
+    help_btn.image = help_icon  # 保持对图像的引用，防止被垃圾回收
+    help_btn.grid(row=0, column=1)
+
+    content_frame = ttk.Frame(choose_window)
+    content_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+
     num_columns = 2
     num_rows = (len(raw_formats) // num_columns) + (len(raw_formats) % num_columns)
     for i in range(num_columns):
-        choose_window.grid_columnconfigure(i, weight=1)
-    for i in range(num_rows):
-        choose_window.grid_rowconfigure(i, weight=1)
+        content_frame.grid_columnconfigure(i, weight=1)
+    for i in range(num_rows + 1):
+        content_frame.grid_rowconfigure(i, weight=1)
 
     row = 0
     col = 0
     for format_name, extension in raw_formats.items():
         button = ttk.Button(
-            choose_window,
+            content_frame,
             text=format_name,
             command=lambda ext=extension: select_folder_and_cleanup(ext)
         )
@@ -102,10 +138,20 @@ def choose_format():
             col = 0
             row += 1
 
-    update_btn = ttk.Button(choose_window, text="检查更新", command=lambda: update_software(LOCAL_VERSION))
-    update_btn.grid(row=num_rows, column=0, columnspan=num_columns, sticky='ew', padx=10, pady=10)
+    update_btn = ttk.Button(content_frame, text="检查更新", command=lambda: update_software(LOCAL_VERSION))
+    update_btn.grid(row=row, column=0, columnspan=num_columns, sticky='ew', padx=10, pady=10)
 
     choose_window.protocol("WM_DELETE_WINDOW", lambda: on_close(choose_window))
+
+    # 使标题栏居中
+    title_frame.grid_columnconfigure(0, weight=1)
+    title_frame.grid_columnconfigure(2, weight=1)
+
+    # 使内容框架和内部小部件扩展填充
+    choose_window.grid_rowconfigure(0, weight=1)
+    choose_window.grid_rowconfigure(1, weight=10)
+    choose_window.grid_columnconfigure(0, weight=1)
+    choose_window.grid_columnconfigure(1, weight=1)
 
 
 def on_close(window):
