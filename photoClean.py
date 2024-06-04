@@ -4,15 +4,23 @@ import os
 import glob
 import webbrowser
 from update import update_software
-from PIL import Image, ImageTk
 
 # 定义本地版本号
 LOCAL_VERSION = "1.2.3"
 
+# 获取当前程序的运行路径
+def resource_path(relative_path):
+    try:
+        # PyInstaller创建临时文件夹存储路径
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 # 创建全局主窗口实例
 root = tk.Tk()
 root.withdraw()  # 初始隐藏主窗口
-
 
 def cleanup_folder(folder_path, raw_extension):
     # 获取文件夹中所有的.jpg和指定的.raw文件
@@ -56,7 +64,6 @@ def cleanup_folder(folder_path, raw_extension):
     # 使用 messagebox 显示消息
     messagebox.showinfo("文件夹清理报告", message)
 
-
 def select_folder_and_cleanup(raw_extension):
     folder_path = filedialog.askdirectory(parent=root)
     if not folder_path:
@@ -68,11 +75,9 @@ def select_folder_and_cleanup(raw_extension):
     else:
         messagebox.showinfo("取消", "操作已取消", parent=root)
 
-
 def open_help():
     """打开帮助文档的回调函数"""
     webbrowser.open("https://github.com/xuqiu-git/photoClean/blob/main/help.txt")  # 使用实际的帮助文档链接
-
 
 def choose_format():
     raw_formats = {
@@ -100,19 +105,14 @@ def choose_format():
 
     # 创建自定义样式
     style = ttk.Style()
-    style.configure("Title.TLabel", font=("Times New Roman", 10))
+    style.configure("Title.TLabel", font=("Arial", 10))
 
     title_label = ttk.Label(inner_frame, text="选择待清理的RAW格式", style="Title.TLabel")
-    title_label.grid(row=0, column=0, padx=(0, 5))
+    title_label.grid(row=0, column=0, padx=10)
 
-    # 加载问号图标并调整大小
-    original_icon = Image.open("question_icon.png")
-    resized_icon = original_icon.resize((15, 15), Image.LANCZOS)
-    help_icon = ImageTk.PhotoImage(resized_icon)
-
-    help_btn = ttk.Button(inner_frame, image=help_icon, command=open_help)
-    help_btn.image = help_icon  # 保持对图像的引用，防止被垃圾回收
-    help_btn.grid(row=0, column=1)
+    # 创建带问号的按钮
+    help_btn = ttk.Button(inner_frame, text="?", command=open_help,width=3)
+    help_btn.grid(row=0, column=1, padx=(0, 5))
 
     content_frame = ttk.Frame(choose_window)
     content_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
@@ -153,14 +153,12 @@ def choose_format():
     choose_window.grid_columnconfigure(0, weight=1)
     choose_window.grid_columnconfigure(1, weight=1)
 
-
 def on_close(window):
     """关闭窗口并检查是否需要退出主程序"""
     window.destroy()
     if not any(win.winfo_exists() for win in root.winfo_children() if isinstance(win, tk.Toplevel)):
         root.destroy()
         root.quit()
-
 
 if __name__ == "__main__":
     root.protocol("WM_DELETE_WINDOW", lambda: on_close(root))
