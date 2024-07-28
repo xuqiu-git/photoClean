@@ -92,7 +92,7 @@ def choose_format():
     }
 
     choose_window = tk.Toplevel(root)
-    choose_window.title("photoCleaner v1.2.3")  # 设置窗口标题
+    choose_window.title(f"photoCleaner v{LOCAL_VERSION}")  # 设置窗口标题
     choose_window.geometry("300x400")
 
     # 创建一个框架用于自定义标题栏
