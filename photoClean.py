@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog, ttk
 import os
 import glob
+import sys
 import webbrowser
 from update import update_software
 
