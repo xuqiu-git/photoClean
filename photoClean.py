@@ -1,12 +1,12 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+from tkinter import filedialog, messagebox, simpledialog, ttk
 import os
 import glob
 import webbrowser
 from update import update_software
 
 # 定义本地版本号
-LOCAL_VERSION = "1.2.3"
+LOCAL_VERSION = "1.2.4"
 
 # 获取当前程序的运行路径
 def resource_path(relative_path):
@@ -93,7 +93,7 @@ def choose_format():
 
     choose_window = tk.Toplevel(root)
     choose_window.title("photoCleaner v1.2.3")  # 设置窗口标题
-    choose_window.geometry("300x300")
+    choose_window.geometry("300x400")
 
     # 创建一个框架用于自定义标题栏
     title_frame = ttk.Frame(choose_window)
@@ -111,7 +111,7 @@ def choose_format():
     title_label.grid(row=0, column=0, padx=10)
 
     # 创建带问号的按钮
-    help_btn = ttk.Button(inner_frame, text="?", command=open_help,width=3)
+    help_btn = ttk.Button(inner_frame, text="?", command=open_help, width=3)
     help_btn.grid(row=0, column=1, padx=(0, 5))
 
     content_frame = ttk.Frame(choose_window)
@@ -138,6 +138,10 @@ def choose_format():
             col = 0
             row += 1
 
+    custom_btn = ttk.Button(content_frame, text="自定义格式", command=custom_format)
+    custom_btn.grid(row=row, column=0, columnspan=num_columns, sticky='ew', padx=10, pady=10)
+    row += 1
+
     update_btn = ttk.Button(content_frame, text="检查更新", command=lambda: update_software(LOCAL_VERSION))
     update_btn.grid(row=row, column=0, columnspan=num_columns, sticky='ew', padx=10, pady=10)
 
@@ -152,6 +156,11 @@ def choose_format():
     choose_window.grid_rowconfigure(1, weight=10)
     choose_window.grid_columnconfigure(0, weight=1)
     choose_window.grid_columnconfigure(1, weight=1)
+
+def custom_format():
+    raw_extension = simpledialog.askstring("输入RAW格式", "请输入RAW文件的后缀（例如raw）：", parent=root)
+    if raw_extension:
+        select_folder_and_cleanup(raw_extension)
 
 def on_close(window):
     """关闭窗口并检查是否需要退出主程序"""
