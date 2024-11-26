@@ -5,9 +5,10 @@ import glob
 import sys
 import webbrowser
 from update import update_software
+from send2trash import send2trash
 
 # 定义本地版本号
-LOCAL_VERSION = "1.2.4"
+LOCAL_VERSION = "1.2.5"
 
 # 获取当前程序的运行路径
 def resource_path(relative_path):
@@ -40,14 +41,18 @@ def cleanup_folder(folder_path, raw_extension):
     deleted_raw_count = 0
     for raw_file, raw_name in zip(raw_files, raw_names):
         if raw_name not in jpg_names:
-            os.remove(raw_file)
+            # os.remove(raw_file)
+            raw_file_normalized = os.path.normpath(raw_file)  # 标准化路径
+            send2trash(raw_file_normalized)
             deleted_raw_count += 1
 
     # 删除没有对应.raw文件的.jpg文件
     deleted_jpg_count = 0
     for jpg_file, jpg_name in zip(jpg_files, jpg_names):
         if jpg_name not in raw_names:
-            os.remove(jpg_file)
+            # os.remove(jpg_file)
+            jpg_file_normalized = os.path.normpath(jpg_file)  # 标准化路径
+            send2trash(jpg_file_normalized)
             deleted_jpg_count += 1
 
     # 计算最终的.jpg和.raw文件数量
